@@ -7,7 +7,7 @@ from . import schemas
 from .model import User
 
 
-async def save(db: AsyncSession, /):
+async def save(db: AsyncSession, err_name: str, /):
     try:
         await db.commit()
     except IntegrityError as ex:
@@ -20,7 +20,7 @@ async def save(db: AsyncSession, /):
             )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Error creating user'
+            detail=f'Error {err_name} user'
         )
 
 
@@ -31,7 +31,7 @@ async def create(db: AsyncSession, user_schema: schemas.UserCreate, /) -> User:
         password=security.get_hash_password(user_schema.password)
     )
     db.add(user_model)
-    await save(db)
+    await save(db, 'creating')
     return user_model
 
 
@@ -58,7 +58,7 @@ async def update(
             setattr(user_model, field, value)
         else:
             setattr(user_model, field, security.get_hash_password(value))
-    await save(db)
+    await save(db, 'updating')
     return user_model
 
 
@@ -90,11 +90,4 @@ async def delete(
     user_model = await read(db, user_id)
     await verify_fields(user_model, user_schema)
     await db.delete(user_model)
-    try:
-        await db.commit()
-    except Exception as ex:
-        await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Error deleting user'
-        )
+    await save(db, 'deleting')
