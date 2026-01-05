@@ -21,3 +21,11 @@ class Chat(Base):
         foreign_keys=[user_id],
         lazy='noload'
     )
+
+    comments: Mapped[list['Comment']] = relationship(
+        'Comment',
+        back_populates='chat',
+        foreign_keys='Comment.chat_id',
+        passive_deletes=True,
+        lazy='noload'
+    )
