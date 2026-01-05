@@ -75,7 +75,9 @@ async def read_by_chat_id(
         limit: int,
         /
 ) -> list[Comment]:
-    query = select(Comment).where(
+    query = select(Comment).options(
+        selectinload(Comment.comment)
+    ).where(
         Comment.chat_id == chat_id
     ).order_by(
         Comment.created_at.desc()
