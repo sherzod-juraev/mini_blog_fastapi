@@ -1,88 +1,45 @@
-# Mini Blog API
+# Mini Blog FastAPI
 
-A FastAPI-based mini blog project supporting **users, posts, comments, and likes**. This project demonstrates SQLAlchemy ORM, PostgreSQL integration, JWT authentication, and password hashing with Passlib (bcrypt).
+Mini Blog FastAPI is an asynchronous
+blog application built with FastAPI,
+SQLAlchemy (async), and PostgreSQL.
 
----
+It provides user authentication, chat
+rooms, and nested comment functionality,
+following modern async patterns and
+secure password/token handling.
 
 ## Features
-- User registration and authentication (JWT)
-- Create, read, update, delete posts
-- Comment on posts
-- Like posts
-- Pagination for posts and comments
-- Relational database handling using SQLAlchemy
 
----
+- User management: sign-up, access tokens, refresh tokens, profile update.
+- Chat rooms: create, update, list, delete chats.
+- Nested comments: comments and replies with pagination support.
+- JWT authentication with access and refresh tokens.
+- Async database operations with SQLAlchemy AsyncSession.
+- Input validation using Pydantic schemas.
+- Centralized exception handling and consistent HTTP responses.
 
-## Tech Stack / Dependencies
-- Python 3.10+
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- psycopg2-binary
-- Passlib (bcrypt)
+## Routers
 
-You can install all dependencies with:
+1. Users [More info](./routes/users/README.md#user-management-package)
+2. Chats [More info](./routes/chats/README.md#chat-router-package)
+3. Comments [More info](./routes/comments/README.md#comment-router-package)
 
-## Clone the repository:
-```bash
-git clone https://github.com/<username>/mini-blog-fastapi.git
-cd mini-blog-fastapi
-```
+## Authentication
 
-## Create a virtual environment (optional but recommended):
-```bash
-pipenv --python 3.13
-pipenv install fastapi uvicorn
-```
+- All endpoints are secured via OAuth2 access tokens.
+- Refresh tokens are stored in cookies.
+- Passwords are securely hashed using industry-standard algorithms.
 
-## activate virtual environment
-```bash
-pipenv shell
-```
-## Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Database
 
-## A blog database must be created in postgresql
+- Uses PostgreSQL.
+- Async session management with SQLAlchemy.
+- Supports foreign key relationships between users, chats, and comments.
 
-## Initialize Alembic (first time only)
-```
-alembic init alembic
-```
-### In alembic.ini
-```
-sqlalchemy.url = driver://user:pass@localhost/blog
-```
+## Notes
 
-### In alembic/env.py
-```
-from serveces.database import Base
-from models.user impotr User
-from models.post import Post
-from models.comment import Comment
-from models.like import Like
-target_metadata = Base.metadata
-```
-
-### Create a new migration
-```
-alembic revision --autogenerate -m "create initial tables"
-```
-
-### Apply migration to database
-```
-alembic upgrade head
-```
-
-## Run the application:
-```bash
-uvicorn app.main:app --reload
-py main.py
-```
-## The API will be available at: 
-```bash
-
-http://127.0.0.1:8000
-```
+- Async-first design ensures non-blocking operations.
+- Nested comment relationships are loaded efficiently using selectinload.
+- Pagination prevents large query loads.
+- Centralized CRUD and exception handling ensures consistency across the application.

@@ -14,7 +14,10 @@ def register_exception(app: FastAPI, /):
     ):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={'detail': 'Error in request'}
+            content={
+                'detail': 'Error in request',
+                'body': exc.errors()
+            }
         )
 
 
